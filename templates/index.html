@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Disease Symptom Predictor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 60px auto;
+            padding: 20px;
+            background: #f4f6f8;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background: #2c7be5;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #1a5bb8;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f5e9;
+            border-left: 5px solid #43a047;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🩺 Disease Symptom Predictor</h1>
+    <p>Apne symptoms describe karo (English mein), aur model possible disease predict karega.</p>
+
+    <form method="POST">
+        <textarea name="symptoms" placeholder="e.g. I have a skin rash with itching and redness on my arms..." required></textarea><br>
+        <button type="submit">Predict</button>
+    </form>
+
+    {% if prediction %}
+    <div class="result">
+        <strong>Predicted Disease:</strong> {{ prediction }}
+    </div>
+    {% endif %}
+
+    <p style="margin-top: 30px; font-size: 12px; color: #888;">
+        Disclaimer: Ye sirf ek educational ML project hai, medical advice nahi. Kisi bhi health concern ke liye doctor se consult karo.
+    </p>
+</body>
+</html>

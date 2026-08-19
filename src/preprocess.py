@@ -1,25 +1,17 @@
-import pandas as pd
 import re
+import string
+import nltk
+from nltk.corpus import stopwords
 
-df = pd.read_csv("data/Symptom2Disease.csv")
+try:
+    stop_words = set(stopwords.words('english'))
+except LookupError:
+    nltk.download('stopwords')
+    stop_words = set(stopwords.words('english'))
 
-df = df.drop(columns=["Unnamed: 0"])
-
-df["text"] = df["text"].str.lower()
-
-df["text"] = df["text"].apply(
-    lambda x: re.sub(r"[^a-zA-Z\s]", "", x)
-)
-
-df["text"] = df["text"].apply(
-    lambda x: re.sub(r"\s+", " ", x).strip()
-)
-
-print("\n--- Cleaned Dataset ---")
-print(df.head())
-
-print("\n--- Dataset Shape ---")
-print(df.shape)
-
-print("\n--- Missing Values ---")
-print(df.isnull().sum())
+def clean_text(text):
+    text = text.lower()
+    text = re.sub(f"[{string.punctuation}]", "", text)
+    words = text.split()
+    words = [w for w in words if w not in stop_words]
+    return " ".join(words)
