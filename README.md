@@ -1,221 +1,476 @@
-# Disease Symptom Predictor
+# 🩺 Disease Symptom Predictor
 
-An NLP-based machine learning project that predicts a possible disease from natural-language symptom descriptions, served through a Flask web application.
+An NLP-based disease symptom prediction system that analyzes natural-language symptom descriptions and predicts the most likely disease using machine learning.
 
-## Project Overview
+The project combines **Natural Language Processing (NLP), TF-IDF feature extraction, Machine Learning, and Flask** to provide a simple web-based symptom prediction interface.
 
-The Disease Symptom Predictor uses Natural Language Processing (NLP) and machine learning to classify symptom descriptions into one of 24 disease categories.
+> ⚠️ **Disclaimer:** This project is intended for educational and research purposes only. It is **not a medical diagnostic tool** and should not be used as a substitute for professional medical advice.
 
-Instead of requiring users to select symptoms from predefined checkboxes, the system accepts symptoms written in natural language through a web interface, making diagnosis-style prediction more intuitive.
+---
 
-> **Disclaimer:** This project is developed for educational and research purposes only. It is not a medical diagnostic system and should not be used as a substitute for professional medical advice.
+## 🚀 Project Overview
 
-## Objectives
+Instead of selecting symptoms from a fixed list, users can describe their symptoms naturally, for example:
 
-* Process natural-language symptom descriptions.
-* Apply NLP techniques to convert text into numerical features.
-* Train and compare multiple machine learning models for disease classification.
-* Analyze model errors to understand real-world limitations.
-* Evaluate whether semantic (embeddings-based) understanding improves on keyword-based methods.
-* Serve predictions through a Flask web application.
+> "I have a headache with nausea and sensitivity to light."
 
-## Dataset
+The system processes the text, converts it into numerical features using **TF-IDF**, and uses a trained **Logistic Regression classifier** to predict one of the diseases represented in the dataset.
 
-The project uses the **Symptom2Disease** dataset containing:
-
-* **1,200 symptom descriptions**
-* **24 disease classes**
-* Natural-language symptom descriptions
-* `text` — symptom description
-* `label` — disease category
-
-The dataset is kept locally in the `data/` directory and is excluded from the Git repository using `.gitignore`.
-
-## Diseases Covered
-
-Acne, Arthritis, Bronchial Asthma, Cervical spondylosis, Chicken pox, Common Cold, Dengue, Dimorphic Hemorrhoids, Fungal infection, Hypertension, Impetigo, Jaundice, Malaria, Migraine, Pneumonia, Psoriasis, Typhoid, Varicose Veins, Allergy, Diabetes, Drug reaction, Gastroesophageal reflux disease, Peptic ulcer disease, Urinary tract infection.
-
-## Methodology
+### Pipeline
 
 ```text
-Natural-Language Symptoms
+User Symptom Description
           ↓
-     Text Cleaning
+     Text Preprocessing
           ↓
-   TF-IDF Vectorization (unigrams + bigrams)
+       TF-IDF
           ↓
-    Train/Test Split (80/20, stratified)
+Machine Learning Model
           ↓
- Model Comparison (Naive Bayes vs Logistic Regression)
+   Disease Prediction
           ↓
- Best Model Selected Automatically
-          ↓
- Flask Web Application
+      Flask Web App
 ```
 
-### 1. Text Preprocessing
-Lowercasing, punctuation removal, and English stopword removal (`src/preprocess.py`).
+---
 
-### 2. TF-IDF Vectorization
-Unigrams and bigrams are used so that two-word symptom phrases (e.g. "skin rash", "joint pain") are captured, not just single keywords.
+## ✨ Features
 
-### 3. Model Training & Comparison
-Two models are trained and automatically compared, with the better-performing one saved for the app:
+* 🧠 Natural-language symptom input
+* 🔤 NLP-based text processing
+* 📊 TF-IDF feature extraction
+* 🤖 Machine-learning disease classification
+* 🌐 Flask web interface
+* 📈 Model performance evaluation
+* 🔍 Confusion matrix analysis
+* 🧪 Comparison of multiple ML approaches
+* 🧬 Experimental sentence-embedding approach
+* 📁 Modular project structure
 
-| Model                   | Accuracy |
-| ------------------------ | -------: |
-| Logistic Regression      | **95.83%** |
-| Multinomial Naive Bayes  | 95.83% |
+---
 
-Logistic Regression was selected as the final model.
+## 📊 Dataset
 
-### 4. Error Analysis
-A confusion matrix (`confusion_matrix.png`) and a dedicated error-analysis script (`src/error_analysis.py`) were used to inspect misclassifications.
+The project uses the **Symptom2Disease** dataset.
 
-**Key finding:** the *drug reaction* class was the weakest (71% F1-score). Inspecting the misclassified examples showed the underlying symptom text contained no medication-related signal (e.g. "fever, dizzy, heart racing, confused") — overlapping heavily with Pneumonia and diabetes symptoms. This was identified as a **data limitation**, not a model or preprocessing issue.
+### Dataset Statistics
 
-### 5. Semantic Embeddings Experiment
-As a further experiment, a sentence-embeddings approach (`all-MiniLM-L6-v2` + Logistic Regression, in `src/train_model_embeddings.py`) was tried to see if semantic understanding would outperform keyword-based TF-IDF.
+| Property         | Value |
+| ---------------- | ----: |
+| Total samples    | 1,200 |
+| Disease classes  |    24 |
+| Training samples |   960 |
+| Testing samples  |   240 |
+| TF-IDF features  | 5,000 |
 
-**Result:** embeddings scored **90.42% accuracy** — lower than TF-IDF (95.83%), and *drug reaction* recall dropped further (30%). This was likely due to the small dataset size (1,200 rows) and the embedding model not being fine-tuned on medical text. TF-IDF's exact keyword matching turned out to be a better fit for this dataset's short, templated symptom phrasing.
+The dataset contains natural-language symptom descriptions paired with corresponding disease labels.
 
-This comparison is kept in the repository as a documented, evaluated trade-off rather than a discarded experiment.
+---
 
-## Web Application
+## 🤖 Machine Learning
 
-The final model is served through a Flask app (`src/app.py`) with a simple form-based UI (`templates/index.html`):
+### 1. TF-IDF + Logistic Regression
 
-* User enters symptoms in plain English
-* Text is cleaned and vectorized using the same TF-IDF pipeline used in training
-* The saved Logistic Regression model predicts the most likely disease
-* Result is displayed on the page with an educational-use disclaimer
+The primary model uses:
 
-## Project Structure
+* **TF-IDF Vectorizer**
+* **Logistic Regression**
+
+The text is transformed into a 5,000-dimensional TF-IDF representation before being passed to the classifier.
+
+### Performance
+
+**Accuracy: 95.83%**
+
+The model is evaluated using a separate test set.
+
+---
+
+### 2. Multinomial Naive Bayes
+
+A second traditional NLP classification approach was evaluated for comparison.
+
+**Accuracy: 95.83%**
+
+This provides a useful baseline for comparing different text-classification algorithms.
+
+---
+
+### 3. Sentence Embeddings Experiment
+
+An additional experiment was performed using sentence embeddings to investigate whether semantic representations could improve disease classification.
+
+**Accuracy: 90.42%**
+
+In this dataset and experimental setup, the TF-IDF-based approach performed better than the embedding-based approach.
+
+This comparison demonstrates an important practical point: **more advanced representations do not automatically produce better results on every dataset.**
+
+---
+
+## 📈 Model Comparison
+
+| Model                   | Feature Representation |   Accuracy |
+| ----------------------- | ---------------------- | ---------: |
+| Logistic Regression     | TF-IDF                 | **95.83%** |
+| Multinomial Naive Bayes | TF-IDF                 | **95.83%** |
+| Embedding-based Model   | Sentence Embeddings    | **90.42%** |
+
+### Key Observation
+
+The TF-IDF-based models achieved the highest accuracy in the current experiment.
+
+The embedding approach performed lower, suggesting that model performance depends heavily on the dataset, representation, preprocessing, and classifier configuration.
+
+---
+
+## 🔍 Error Analysis
+
+A **confusion matrix** is included in the project to analyze classification performance across the 24 disease classes.
+
+The confusion matrix helps identify:
+
+* Correctly classified diseases
+* Frequently confused disease classes
+* Classes with weaker classification performance
+* Areas where additional data or improved preprocessing may help
+
+### Confusion Matrix
+
+![Confusion Matrix](confusion_matrix.png)
+
+---
+
+## 🌐 Flask Web Application
+
+The trained model is integrated into a Flask web application.
+
+Users can enter symptoms in natural language through a web interface.
+
+### Example
+
+**Input:**
+
+```text
+I have a headache with nausea and sensitivity to light.
+```
+
+The application processes the input through the trained NLP pipeline and returns a predicted disease.
+
+> The prediction should be treated as a machine-learning output, not a medical diagnosis.
+
+---
+
+## 🗂️ Project Structure
 
 ```text
 disease-symptom-predictor/
 │
 ├── src/
-│   ├── explore_data.py            # Initial dataset exploration
-│   ├── preprocess.py              # Text cleaning function
-│   ├── train_model.py             # Trains & compares NB/LR, saves best model
-│   ├── train_model_embeddings.py  # Sentence-embeddings experiment
-│   ├── error_analysis.py          # Inspects misclassified examples
-│   ├── predictor.py               # Loads model, exposes predict_disease()
-│   └── app.py                     # Flask web application
+│   ├── app.py
+│   ├── train_model.py
+│   ├── merge_data.py
+│   └── train_model_embeddings.py
 │
 ├── templates/
-│   └── index.html                 # Web UI
+│   └── index.html
 │
 ├── data/
-│   └── Symptom2Disease.csv        # (excluded from Git)
+│   └── Symptom2Disease.csv
 │
-├── model.pkl                      # Trained TF-IDF + Logistic Regression model
-├── vectorizer.pkl                 # Fitted TF-IDF vectorizer
-├── confusion_matrix.png           # Error analysis visualization
-├── .gitignore
+├── confusion_matrix.png
 ├── requirements.txt
+├── .gitignore
 └── README.md
 ```
 
-## Technologies Used
+### Important Files
+
+| File                            | Description                    |
+| ------------------------------- | ------------------------------ |
+| `src/app.py`                    | Flask web application          |
+| `src/train_model.py`            | Model training and evaluation  |
+| `src/merge_data.py`             | Dataset preparation/merging    |
+| `src/train_model_embeddings.py` | Embedding-based experiment     |
+| `templates/index.html`          | Web interface                  |
+| `confusion_matrix.png`          | Model evaluation visualization |
+| `requirements.txt`              | Python dependencies            |
+
+---
+
+## 🛠️ Technologies Used
+
+### Programming
 
 * Python
-* Pandas, NumPy
-* Scikit-learn (TF-IDF, Logistic Regression, Naive Bayes)
-* Sentence-Transformers (embeddings experiment)
+* HTML
+* CSS
+
+### Machine Learning
+
+* Scikit-learn
+* Logistic Regression
+* Multinomial Naive Bayes
+
+### NLP
+
+* TF-IDF
+* Text preprocessing
+* Sentence embeddings
+
+### Data Processing
+
+* Pandas
+* NumPy
+
+### Visualization
+
+* Matplotlib
+
+### Web Development
+
 * Flask
-* NLTK
-* Matplotlib, Seaborn (confusion matrix)
-* Git & GitHub
+* Jinja2
+* HTML/CSS
 
-## Installation
+---
 
-Clone the repository:
+## ⚙️ Installation
+
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/aniruddhasutradher07-commits/disease-symptom-predictor.git
+```
+
+### 2. Navigate to the project
+
+```bash
 cd disease-symptom-predictor
 ```
 
-Create and activate a virtual environment:
+### 3. Create a virtual environment
 
 ```bash
 python -m venv venv
+```
+
+### 4. Activate the virtual environment
+
+#### macOS / Linux
+
+```bash
 source venv/bin/activate
 ```
 
-Install the required packages:
+#### Windows
+
+```bash
+venv\Scripts\activate
+```
+
+### 5. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Dataset Setup
+---
 
-Download **Symptom2Disease.csv** from Kaggle and place it inside:
+## ▶️ Running the Project
 
-```text
-data/Symptom2Disease.csv
-```
-
-## Running the Project
-
-Train the model (regenerates `model.pkl`, `vectorizer.pkl`, `confusion_matrix.png`):
+### Train the model
 
 ```bash
 python src/train_model.py
 ```
 
-Run the web application:
+This generates the trained model and TF-IDF vectorizer.
+
+### Start the Flask application
 
 ```bash
 python src/app.py
 ```
 
-Then open `http://127.0.0.1:5000` in your browser.
+Then open:
 
-(Optional) Run the embeddings comparison experiment:
+```text
+http://127.0.0.1:5000/
+```
+
+in your browser.
+
+---
+
+## 🧪 Running the Embedding Experiment
+
+To run the experimental embedding-based approach:
 
 ```bash
 python src/train_model_embeddings.py
 ```
 
-(Optional) Inspect misclassified examples:
+This script is included to compare semantic embedding representations against the traditional TF-IDF approach.
 
-```bash
-python src/error_analysis.py
+---
+
+## 📦 Model Files
+
+The trained model artifacts include:
+
+```text
+model.pkl
+vectorizer.pkl
 ```
 
-## Current Limitations
+These files are generated from the training pipeline.
 
-* The dataset is relatively small (1,200 samples across 24 classes).
-* Some disease classes with overlapping generic symptoms (e.g. drug reaction, pneumonia) are harder to distinguish from text alone.
-* Natural-language descriptions very different from the training distribution may produce unreliable predictions.
-* The model does not provide clinical reasoning — it is a statistical classifier, not a diagnostic tool.
-* A high test accuracy does not imply medical diagnostic accuracy.
+They are intentionally treated as generated artifacts in the current development workflow rather than being required as source code.
 
-## Future Improvements
+To recreate them, run:
 
-* Top-3 disease predictions with confidence scores
-* Confidence threshold / uncertainty rejection for low-confidence inputs
-* Larger, more diverse training dataset
-* Live deployment (Render)
-* Improved UI/UX for the web app
-* Chatbot-style multi-turn symptom clarification
+```bash
+python src/train_model.py
+```
 
-## Learning Outcomes
+---
 
-This project demonstrates practical experience in:
+## 🔬 Methodology
 
-* Natural Language Processing & text preprocessing
-* TF-IDF feature engineering (unigrams/bigrams)
-* Multi-class classification & model comparison
-* Error analysis using confusion matrices
-* Evaluating semantic embeddings vs classical NLP methods, and documenting a negative result
-* Building and serving a model through a Flask web application
-* Git and GitHub workflow
+The overall workflow consists of the following stages:
 
-## Disclaimer
+### 1. Data Collection
 
-This project is intended strictly for educational purposes. Predictions generated by the system should not be interpreted as medical diagnoses, treatment recommendations, or professional medical advice. Users experiencing health concerns should consult a qualified healthcare professional.
+Natural-language symptom descriptions and disease labels are obtained from the Symptom2Disease dataset.
+
+### 2. Data Preprocessing
+
+The dataset is cleaned and prepared for machine-learning training.
+
+### 3. Text Vectorization
+
+TF-IDF converts symptom descriptions into numerical feature vectors.
+
+### 4. Model Training
+
+Machine-learning classifiers are trained using the transformed text data.
+
+### 5. Evaluation
+
+The models are evaluated using a held-out test set.
+
+Metrics and visualizations are used to compare performance.
+
+### 6. Deployment
+
+The selected model is integrated into a Flask web application.
+
+---
+
+## 📌 Key Results
+
+The current experimental results show:
+
+```text
+Dataset Size        : 1,200 samples
+Disease Classes     : 24
+Training Set        : 960 samples
+Testing Set         : 240 samples
+TF-IDF Features     : 5,000
+
+Logistic Regression : 95.83%
+Naive Bayes         : 95.83%
+Embeddings          : 90.42%
+```
+
+The results indicate that traditional TF-IDF-based approaches performed strongly on the current dataset.
+
+---
+
+## 🔮 Future Improvements
+
+Possible future improvements include:
+
+* [ ] Add probability/confidence calibration
+* [ ] Improve symptom preprocessing
+* [ ] Handle spelling mistakes and abbreviations
+* [ ] Add symptom normalization
+* [ ] Experiment with Word2Vec and FastText
+* [ ] Test transformer-based models such as BERT
+* [ ] Increase dataset size and diversity
+* [ ] Add explainable AI features
+* [ ] Improve UI/UX
+* [ ] Add REST API endpoints
+* [ ] Containerize the application using Docker
+* [ ] Deploy the Flask application
+* [ ] Add automated testing
+* [ ] Add CI/CD using GitHub Actions
+
+---
+
+## ⚠️ Limitations
+
+This project has several limitations:
+
+1. The model is trained on a relatively small dataset.
+2. The prediction is limited to the disease classes present in the dataset.
+3. Real-world medical symptoms can be significantly more complex.
+4. The model does not perform clinical examination or laboratory testing.
+5. Prediction accuracy on the dataset does not guarantee real-world medical accuracy.
+6. The system should not be used for self-diagnosis or treatment decisions.
+
+---
+
+## 🎓 Educational Purpose
+
+This project demonstrates the practical application of:
+
+```text
+Natural Language Processing
+        +
+Machine Learning
+        +
+Text Classification
+        +
+Model Evaluation
+        +
+Flask Deployment
+```
+
+It was developed as a learning project to explore how machine-learning techniques can be applied to healthcare-related text data.
+
+---
+
+## 👨‍💻 Author
+
+**Aniruddha Sutradhar**
+
+B.Tech Biotechnology
+
+Interests:
+
+* Machine Learning
+* Bioinformatics
+* Biotechnology
+* Healthcare AI
+* NLP
+* Data Science
+
+---
+
+## 📜 Disclaimer
+
+This project is intended **strictly for educational and research purposes**.
+
+The predicted disease is generated by a machine-learning model and should **not** be considered a medical diagnosis.
+
+Always consult a qualified healthcare professional for medical advice, diagnosis, or treatment.
+
+---
+
+## ⭐ If You Find This Project Interesting
+
+Feel free to explore the code, experiment with different NLP techniques, and improve the model.
+
+If you find the project useful, consider giving the repository a ⭐ on GitHub.
