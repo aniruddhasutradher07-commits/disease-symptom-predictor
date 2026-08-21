@@ -1,66 +1,287 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Disease Symptom Predictor</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 60px auto;
-            padding: 20px;
-            background: #f4f6f8;
-        }
-        h1 {
-            color: #2c3e50;
-        }
-        textarea {
-            width: 100%;
-            height: 120px;
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-        }
-        button {
-            margin-top: 10px;
-            padding: 10px 20px;
-            background: #2c7be5;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        button:hover {
-            background: #1a5bb8;
-        }
-        .result {
-            margin-top: 20px;
-            padding: 15px;
-            background: #e8f5e9;
-            border-left: 5px solid #43a047;
-            font-size: 18px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Symptom Checker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-a: #eef1fd;
+    --bg-b: #f7f2fb;
+    --surface: #ffffff;
+    --surface-2: #f5f7fe;
+    --ink: #232a45;
+    --muted: #8891b0;
+    --primary: #6c7fe8;
+    --primary-dark: #5567d1;
+    --pink: #ff7a90;
+    --mint: #2fbf94;
+    --shadow: 0 14px 34px rgba(70, 80, 160, 0.12);
+    --radius-lg: 22px;
+    --radius-md: 14px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    color: var(--ink);
+    background: linear-gradient(160deg, var(--bg-a), var(--bg-b));
+    padding: 40px 18px 60px;
+  }
+
+  .wrap { max-width: 960px; margin: 0 auto; }
+
+  /* Header */
+  header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 26px;
+  }
+  .icon-chip {
+    width: 46px; height: 46px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--primary), #a6b4f5);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    box-shadow: var(--shadow);
+    flex-shrink: 0;
+  }
+  header h1 {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    margin: 0;
+  }
+  header p {
+    margin: 2px 0 0;
+    color: var(--muted);
+    font-size: 13.5px;
+  }
+  .date-pill {
+    margin-left: auto;
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 12.5px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    box-shadow: var(--shadow);
+  }
+
+  /* App shell */
+  .shell {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 28px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  @media (max-width: 760px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+
+  .panel-label {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--ink);
+    background: var(--surface-2);
+    border: 1.5px solid transparent;
+    border-radius: var(--radius-md);
+    resize: vertical;
+  }
+  textarea::placeholder { color: #a6adc9; }
+  textarea:focus-visible {
+    outline: none;
+    border-color: var(--primary);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(108,127,232,0.15);
+  }
+
+  button {
+    margin-top: 14px;
+    width: 100%;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    font-size: 14.5px;
+    cursor: pointer;
+    box-shadow: 0 10px 24px rgba(108,127,232,0.35);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  button:hover { transform: translateY(-1px); box-shadow: 0 14px 28px rgba(108,127,232,0.4); }
+  button:active { transform: translateY(0); }
+  button:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(108,127,232,0.3);
+  }
+
+  /* Result card */
+  .report-card {
+    background: var(--surface-2);
+    border-radius: var(--radius-md);
+    padding: 22px;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .empty-state {
+    text-align: center;
+    color: #a6adc9;
+    font-size: 13.5px;
+    line-height: 1.6;
+  }
+
+  .result-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .result-icon {
+    width: 38px; height: 38px;
+    border-radius: 11px;
+    background: linear-gradient(135deg, var(--pink), #ffb199);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .result-tag {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--mint);
+    background: rgba(47,191,148,0.12);
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+
+  .result-disease {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 800;
+    font-size: 24px;
+    text-transform: capitalize;
+    margin: 0 0 8px;
+  }
+
+  /* decorative sparkline */
+  .spark { width: 100%; height: 30px; margin: 6px 0 10px; }
+  .spark-path {
+    fill: none;
+    stroke: var(--primary);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .spark-path { animation: draw 1.1s ease-out both; }
+  }
+  @keyframes draw {
+    from { stroke-dashoffset: 1; }
+    to { stroke-dashoffset: 0; }
+  }
+
+  .result-note {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  footer {
+    margin-top: 22px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+</style>
 </head>
 <body>
-    <h1>🩺 Disease Symptom Predictor</h1>
-    <p>Apne symptoms describe karo (English mein), aur model possible disease predict karega.</p>
+  <div class="wrap">
+    <header>
+      <div class="icon-chip">🩺</div>
+      <div>
+        <h1>Symptom Checker</h1>
+        <p>Describe your symptoms in plain English</p>
+      </div>
+      <span class="date-pill" id="case-date"></span>
+    </header>
 
-    <form method="POST">
-        <textarea name="symptoms" placeholder="e.g. I have a skin rash with itching and redness on my arms..." required></textarea><br>
-        <button type="submit">Predict</button>
-    </form>
+    <div class="shell">
+      <form method="POST">
+        <div class="grid">
+          <div>
+            <div class="panel-label">💬 What are you experiencing?</div>
+            <textarea name="symptoms" placeholder="e.g. I have a skin rash with itching and redness on my arms, and it gets worse at night..." required>{{ symptoms or '' }}</textarea>
+            <button type="submit">Check symptoms</button>
+          </div>
 
-    {% if prediction %}
-    <div class="result">
-        <strong>Predicted Disease:</strong> {{ prediction }}
+          <div>
+            <div class="panel-label">📋 Prediction</div>
+            <div class="report-card">
+              {% if prediction %}
+                <div class="result-badge">
+                  <div class="result-icon">💊</div>
+                  <span class="result-tag">Predicted</span>
+                </div>
+                <div class="result-disease">{{ prediction }}</div>
+                <svg class="spark" viewBox="0 0 200 30" preserveAspectRatio="none">
+                  <path class="spark-path" pathLength="1"
+                    d="M0,20 L30,20 L42,8 L54,26 L66,14 L80,20 L200,20" />
+                </svg>
+                <p class="result-note">
+                  Matched from patterns in training data — not a medical diagnosis.
+                  Consult a licensed clinician for real symptoms.
+                </p>
+              {% else %}
+                <div class="empty-state">No symptoms checked yet.<br>Your result will show up here.</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </form>
     </div>
-    {% endif %}
 
-    <p style="margin-top: 30px; font-size: 12px; color: #888;">
-        Disclaimer: Ye sirf ek educational ML project hai, medical advice nahi. Kisi bhi health concern ke liye doctor se consult karo.
-    </p>
+    <footer>
+      Built as a machine learning portfolio project (TF-IDF + Logistic Regression). Educational use only, not medical advice.
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById('case-date').textContent =
+      new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' });
+  </script>
 </body>
 </html>

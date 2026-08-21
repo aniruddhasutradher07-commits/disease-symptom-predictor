@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-csv_path = os.path.join(BASE_DIR, "data", "Symptom2Disease.csv")
+csv_path = os.path.join(BASE_DIR, "data", "merged_symptom_disease.csv")
 
 df = pd.read_csv(csv_path)
 df['clean_text'] = df['text'].apply(clean_text)

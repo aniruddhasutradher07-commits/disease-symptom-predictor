@@ -10,7 +10,7 @@ def home():
     if request.method == "POST":
         symptoms = request.form["symptoms"]
         prediction = predict_disease(symptoms)
-    return render_template("index.html", prediction=prediction)
+    return render_template("index.html", prediction=prediction, symptoms=symptoms)
 
 if __name__ == "__main__":
     app.run(debug=True)
