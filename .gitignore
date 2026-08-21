@@ -5,3 +5,5 @@ __pycache__/
 data/
 *.save
 model_embeddings.pkl
+model.pkl
+vectorizer.pkl
